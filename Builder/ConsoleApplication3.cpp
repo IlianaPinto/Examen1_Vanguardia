@@ -7,7 +7,9 @@ class House {
     string _structure;
     string _floor;
 public:
-    House(string houseType) :_house{ houseType } {}
+    House(string houseType) {
+      _house = houseType;
+    }
     void setRoof(string roof) { _roof = roof; }
     void setStructure(string structure) { _structure = structure; }
     void setFloor(string floor) { _floor = floor; }
@@ -91,7 +93,7 @@ int main() {
                 <<"|    _    |  |"<<endl
                 <<"|[] | |[] |[]|"<<endl
                 <<"|   | |   |  |" <<endl;
-            
+
         }
         else if (resp == 2) {
             castle->show();
@@ -112,4 +114,3 @@ int main() {
 
     return 0;
 }
-
