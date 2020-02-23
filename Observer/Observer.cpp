@@ -1,76 +1,68 @@
 #include <iostream>
 #include <vector>
+#include <string>
 using namespace std;
 
-class Subject {
-    // 1. "independent" functionality
-    vector < class Observer * > views; // 3. Coupled only to "interface"
-    int value;
+class Blackboard {
+    vector < class Observer * > _students;
+    string _activity;
   public:
-    void attach(Observer *obs) {
-        views.push_back(obs);
+    void attach(Observer *student) {
+        _students.push_back(student);
     }
-    void setVal(int val) {
-        value = val;
+    void setActivity(string activity) {
+        _activity = activity;
         notify();
     }
-    int getVal() {
-        return value;
+    string getActivity() {
+        return _activity;
     }
     void notify();
 };
 
 class Observer {
-    // 2. "dependent" functionality
-    Subject *model;
-    int denom;
+    Blackboard *_blackboard;
   public:
-    Observer(Subject *mod, int div) {
-        model = mod;
-        denom = div;
-        // 4. Observers register themselves with the Subject
-        model->attach(this);
+    Observer(Blackboard *blackboard) {
+      _blackboard = blackboard;
+      _blackboard->attach(this);
     }
     virtual void update() = 0;
   protected:
-    Subject *getSubject() {
-        return model;
-    }
-    int getDivisor() {
-        return denom;
+    Blackboard *getBlackboard() {
+        return _blackboard;
     }
 };
 
-void Subject::notify() {
-  // 5. Publisher broadcasts
-  for (int i = 0; i < views.size(); i++)
-    views[i]->update();
+void Blackboard::notify() {
+  for (int i = 0; i < _students.size(); i++)
+    _students[i]->update();
 }
 
-class DivObserver: public Observer {
+class Student: public Observer {
   public:
-    DivObserver(Subject *mod, int div): Observer(mod, div){}
+    Student(Blackboard *blackboard): Observer(blackboard){}
     void update() {
-        // 6. "Pull" information of interest
-        int v = getSubject()->getVal(), d = getDivisor();
-        cout << v << " div " << d << " is " << v / d << '\n';
-    }
-};
-
-class ModObserver: public Observer {
-  public:
-    ModObserver(Subject *mod, int div): Observer(mod, div){}
-    void update() {
-        int v = getSubject()->getVal(), d = getDivisor();
-        cout << v << " mod " << d << " is " << v % d << '\n';
+        string act = getBlackboard()->getActivity();
+        cout<<"Activity "<<act<<" recieved!"<<endl;
     }
 };
 
 int main() {
-  Subject subj;
-  DivObserver divObs1(&subj, 4); // 7. Client configures the number and
-  DivObserver divObs2(&subj, 3); //    type of Observers
-  ModObserver modObs3(&subj, 3);
-  subj.setVal(14);
+  string resp, mystr;
+  Blackboard* bb = new Blackboard();
+  Student std (bb);
+  do {
+    cout<<"1. New activity "<<endl;
+    cout<<"2. Quit"<<endl;
+    getline(cin,resp);
+    if (resp == "1") {
+      cout<<"Introduce activity: "<<endl;
+      getline(cin,mystr);
+      bb->setActivity(mystr);
+    }else if (resp == "2"){
+      break;
+    }
+    cout<<endl;
+  } while(true);
 }
-
